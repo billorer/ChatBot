@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Backend.Bot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,8 +12,25 @@ namespace Backend.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "Home Page";
-
             return View();
+        }
+
+        public string ChatMessage()
+        {
+            if (Request.QueryString["method"] == "1")
+            {
+                QnABotAssistant qnaBotAssist = new QnABotAssistant();
+                return qnaBotAssist.Answer(Request.QueryString["msg"]);
+            }
+            else if (Request.QueryString["method"] == "2")
+            {
+                AccordBotAssistant accdBotAssist = new AccordBotAssistant();
+                return accdBotAssist.Answer(Request.QueryString["msg"]);
+            }
+            else
+            {
+                return "NowayToGetHereError";
+            }
         }
     }
 }
