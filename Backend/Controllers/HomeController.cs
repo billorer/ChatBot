@@ -1,16 +1,16 @@
 ﻿using Backend.Bot;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.IO;
 using System.Web.Mvc;
 
 namespace Backend.Controllers
 {
     public class HomeController : Controller
     {
+        private QnABotAssistant qnaBotAssist;
+
         public ActionResult Index()
-        {
+        { 
             ViewBag.Title = "Home Page";
             return View();
         }
@@ -19,18 +19,28 @@ namespace Backend.Controllers
         {
             if (Request.QueryString["method"] == "1")
             {
-                QnABotAssistant qnaBotAssist = new QnABotAssistant();
+                qnaBotAssist = new QnABotAssistant();
                 return qnaBotAssist.Answer(Request.QueryString["msg"]);
             }
             else if (Request.QueryString["method"] == "2")
-            {
-                AccordBotAssistant accdBotAssist = new AccordBotAssistant();
-                return accdBotAssist.Answer(Request.QueryString["msg"]);
+            {           
+                return AccordBotAssistant.Instance.Answer(Request.QueryString["msg"]);
             }
             else
             {
                 return "NowayToGetHereError";
             }
+        }
+
+        public ActionResult GetImage(int imgNumber)
+        {
+            FileStream fs = new FileStream(@"c:\WordDocImages\img_" + imgNumber + ".png",
+            FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(fs);
+            Byte[] bytes = br.ReadBytes((Int32)fs.Length);
+            br.Close();
+            fs.Close();
+            return File(bytes, "image/png");
         }
     }
 }

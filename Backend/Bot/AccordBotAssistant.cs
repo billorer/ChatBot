@@ -16,7 +16,6 @@ namespace Backend.Bot
         /// Document vocabulary, containing each word's IDF value.
         /// </summary>
         private static Dictionary<string, double> _vocabularyIDF;
-        private List<string> file;
 
         private List<string> questions;
         private List<string> answers;
@@ -34,28 +33,37 @@ namespace Backend.Bot
         private static string questionsDataPath = @"c:\questions.xml";
         private static string vocabularyIDFDataPath = @"c:\vocabularyIDF.xml";
 
-        public string Answer(string message)
+        private static AccordBotAssistant instance = null;
+
+        public static AccordBotAssistant Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new AccordBotAssistant();
+                }
+
+                return instance;
+            }
+        }
+
+        private AccordBotAssistant()
         {
             _vocabularyIDF = new Dictionary<string, double>();
+        }
 
+        public string Answer(string message)
+        {
             PrepareTheCurrentQuestion(message);
 
-            if (File.Exists(machineDataPath) && File.Exists(answersDataPath) && 
-                File.Exists(vocabularyIDFDataPath) && File.Exists(questionsDataPath))
-            {
-                LoadMandatoryDataFromFiles();   
-            }
-            else if(File.Exists(answersDataPath) && File.Exists(questionsDataPath))
+            if(File.Exists(answersDataPath) && File.Exists(questionsDataPath) && machine == null)
             {
                 double[][] databaseInputsTFIDF = GetNormalizedTFIDFInputsFromFiles(_vocabularyIDF);
 
                 machine = GetSVM(databaseInputsTFIDF);
 
                 SaveMandatoryDataIntoFiles();
-            }
-            else
-            {
-                return "The program does not have the adequate files to proceed: " + answersDataPath + " and " + questionsDataPath;
             }
 
             double[][] currentQuestionInputsTFIDF = CreateNormalizedTFIDFInputs(_vocabularyIDF, currentQuestionsVocabulary, currentQuestionsWords);
@@ -80,16 +88,26 @@ namespace Backend.Bot
         /// <summary>
         /// This function loads the adequate files 
         /// </summary>
-        private void LoadMandatoryDataFromFiles()
+        public string LoadMandatoryDataFromFiles()
         {
-            machine = MulticlassSupportVectorMachine.Load(machineDataPath);
+            if (File.Exists(machineDataPath) && File.Exists(answersDataPath) &&
+                File.Exists(vocabularyIDFDataPath) && File.Exists(questionsDataPath))
+            {
+                machine = MulticlassSupportVectorMachine.Load(machineDataPath);
 
-            answers = GetAnswersFromFile();
-            questions = GetQuestionsFromFile();
+                answers = GetAnswersFromFile();
+                questions = GetQuestionsFromFile();
 
-            _vocabularyIDF = XElement.Parse(File.ReadAllText(vocabularyIDFDataPath))
-            .Elements()
-            .ToDictionary(k => k.Name.ToString(), v => Convert.ToDouble(v.Value.ToString()));
+                _vocabularyIDF = XElement.Parse(File.ReadAllText(vocabularyIDFDataPath))
+                .Elements()
+                .ToDictionary(k => k.Name.ToString(), v => Convert.ToDouble(v.Value.ToString()));
+                return "ok";
+            }
+            else
+            {
+                return "The mandatory files do not exist or they cannot be found in the directory: ex. " + machineDataPath + " " +
+                    answersDataPath + " " + vocabularyIDFDataPath + " " + questionsDataPath;
+            }
         }
 
         /// <summary>
