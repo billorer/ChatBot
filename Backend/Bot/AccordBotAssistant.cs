@@ -1,11 +1,10 @@
 ﻿using Accord.MachineLearning.VectorMachines;
 using Accord.MachineLearning.VectorMachines.Learning;
+using Backend.Public;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace Backend.Bot
@@ -27,11 +26,6 @@ namespace Backend.Bot
         private List<List<string>> currentQuestionsWords;
 
         private MulticlassSupportVectorMachine machine;
-
-        private static string machineDataPath = @"c:\machineData.dat";
-        private static string answersDataPath = @"c:\answers.xml";
-        private static string questionsDataPath = @"c:\questions.xml";
-        private static string vocabularyIDFDataPath = @"c:\vocabularyIDF.xml";
 
         private static AccordBotAssistant instance = null;
 
@@ -57,7 +51,7 @@ namespace Backend.Bot
         {
             PrepareTheCurrentQuestion(message);
 
-            if(File.Exists(answersDataPath) && File.Exists(questionsDataPath) && machine == null)
+            if(File.Exists(PublicFunctionsVariables.answersDataPath) && File.Exists(PublicFunctionsVariables.questionsDataPath) && machine == null)
             {
                 double[][] databaseInputsTFIDF = GetNormalizedTFIDFInputsFromFiles(_vocabularyIDF);
 
@@ -90,23 +84,23 @@ namespace Backend.Bot
         /// </summary>
         public string LoadMandatoryDataFromFiles()
         {
-            if (File.Exists(machineDataPath) && File.Exists(answersDataPath) &&
-                File.Exists(vocabularyIDFDataPath) && File.Exists(questionsDataPath))
+            if (File.Exists(PublicFunctionsVariables.machineDataPath) && File.Exists(PublicFunctionsVariables.answersDataPath) &&
+                File.Exists(PublicFunctionsVariables.vocabularyIDFDataPath) && File.Exists(PublicFunctionsVariables.questionsDataPath))
             {
-                machine = MulticlassSupportVectorMachine.Load(machineDataPath);
+                machine = MulticlassSupportVectorMachine.Load(PublicFunctionsVariables.machineDataPath);
 
                 answers = GetAnswersFromFile();
                 questions = GetQuestionsFromFile();
 
-                _vocabularyIDF = XElement.Parse(File.ReadAllText(vocabularyIDFDataPath))
+                _vocabularyIDF = XElement.Parse(File.ReadAllText(PublicFunctionsVariables.vocabularyIDFDataPath))
                 .Elements()
                 .ToDictionary(k => k.Name.ToString(), v => Convert.ToDouble(v.Value.ToString()));
                 return "ok";
             }
             else
             {
-                return "The mandatory files do not exist or they cannot be found in the directory: ex. " + machineDataPath + " " +
-                    answersDataPath + " " + vocabularyIDFDataPath + " " + questionsDataPath;
+                return "The mandatory files do not exist or they cannot be found in the directory: ex. " + PublicFunctionsVariables.machineDataPath + " " +
+                    PublicFunctionsVariables.answersDataPath + " " + PublicFunctionsVariables.vocabularyIDFDataPath + " " + PublicFunctionsVariables.questionsDataPath;
             }
         }
 
@@ -115,9 +109,9 @@ namespace Backend.Bot
         /// </summary>
         private void SaveMandatoryDataIntoFiles()
         {
-            machine.Save(machineDataPath);
+            machine.Save(PublicFunctionsVariables.machineDataPath);
             new XElement("vocabulary", _vocabularyIDF.Select(kv => new XElement(kv.Key, kv.Value)))
-            .Save(vocabularyIDFDataPath, SaveOptions.OmitDuplicateNamespaces);
+            .Save(PublicFunctionsVariables.vocabularyIDFDataPath, SaveOptions.OmitDuplicateNamespaces);
         }
 
         /// <summary>
@@ -156,7 +150,7 @@ namespace Backend.Bot
         /// <returns></returns>
         private List<string> GetQuestionsFromFile()
         {
-            return XDocument.Load(questionsDataPath).Root.Elements("question")
+            return XDocument.Load(PublicFunctionsVariables.questionsDataPath).Root.Elements("question")
                                        .Select(element => element.Value)
                                        .ToList();
         }
@@ -167,7 +161,7 @@ namespace Backend.Bot
         /// <returns></returns>
         private List<string> GetAnswersFromFile()
         {
-            return XDocument.Load(answersDataPath).Root.Elements("answer")
+            return XDocument.Load(PublicFunctionsVariables.answersDataPath).Root.Elements("answer")
                            .Select(element => element.Value)
                            .ToList();
         }
@@ -246,29 +240,14 @@ namespace Backend.Bot
                 string[] words = question.Split(' ');
                 for(int i = 0; i < words.Length; i++)
                 {
-                    string word = Tokenize(words[i]);
+                    string word = PublicFunctionsVariables.Tokenize(words[i]);
                     if (word != "")
                     {
                         voc.Add(word.ToLower());
-                    }
-                    
+                    }                  
                 }
             }
             return voc;
-        }
-
-        /// <summary>
-        /// This function gets a string and removes the inproper characters
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private string Tokenize(string text)
-        {
-            // Strip numbers.
-            text = Regex.Replace(text, "[0-9]+", "number");
-
-            // Tokenize and also get rid of any punctuation
-            return text.Split(" @$/#.-:&*+=[]?!(){},''\">_<;%\\".ToCharArray())[0];
         }
 
         /// <summary>
@@ -286,7 +265,7 @@ namespace Backend.Bot
                 string[] words = question.Split(' ');
                 for (int i = 0; i < words.Length; i++)
                 {
-                    string word = Tokenize(words[i]);
+                    string word = PublicFunctionsVariables.Tokenize(words[i]);
                     stemmedDoc.Add(word.ToLower());
                 }
                 stemmedDocs.Add(stemmedDoc);
@@ -331,22 +310,6 @@ namespace Backend.Bot
             }
 
             return vectors.Select(v => v.ToArray()).ToArray();
-        }
-
-        private List<string> ReadFile(string filename)
-        {
-            var list = new List<string>();
-            var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-            {
-                string line;
-                while ((line = streamReader.ReadLine()) != null)
-                {
-                    if(line!="")
-                        list.Add(line);
-                }
-            }
-            return list;
         }
     }
 }

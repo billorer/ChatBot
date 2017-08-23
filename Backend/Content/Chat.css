@@ -10,10 +10,12 @@ input {
 
 #wrapper {
     margin: 0 auto;
-    padding-bottom: 25px;
-    padding-top: 25px;
+    padding: 25px;
     background: #062136;
     border-radius: 10px;
+
+    min-height: 400px;
+    min-width: 600px;
 }
 
 #chatbox {
@@ -22,11 +24,12 @@ input {
     margin-bottom: 25px;
     padding: 10px;
     background: #fff;
-    height: 600px;
-    width: 900px;
     border: 1px solid #ACD8F0;
     overflow: auto;
     border-radius: 10px;
+
+    min-height: 280px;
+    min-width: 480px;
 }
 
 #usermsg {
@@ -50,27 +53,55 @@ input {
     white-space: normal;
 }
 
+.chatUserName, .chatAssistantName {
+    color: #e21323;
+    font-weight: bold;
+}
+
 .chatAssistant {
     border-radius: 10px;
     padding: 10px;
     margin: 0 0 0 36px;
     background: #e5f7fd;
     margin-bottom: 10px;
-    margin-right: 10px;
     white-space: normal;
 }
 
-.radio-inline {
+.radioButtons {
     margin-bottom: 15px;
-    color: #fff;
-}
-
-.figureText {
-    font-style: italic;
-    text-align: center;
 }
 
 .figureImage {
     display: block;
     margin: 0 auto;
+    margin-bottom: 25px;
+}
+
+/* TABLE */
+table {
+    border: 1px solid black;
+    text-align: center;
+}
+
+table th {
+    font-weight: bold;
+    text-align: center;
+}
+
+table td, table th {
+    border: 1px solid black;
+}
+
+/* NOTE SECTION */
+.boxWithNoSides {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.note {
+    margin-bottom: 5px;
+    font-weight: bold;
 }

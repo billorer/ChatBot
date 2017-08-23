@@ -16,3 +16,17 @@ textarea {
     max-width: 280px;
 }
 
+.navbarCustom {
+    background-color: rgb(6, 33, 54);
+    box-shadow: 0px 10px 10px #888;
+}
+
+.information {
+    color: #fff;
+}
+
+.jumbotron {
+    color: rgb(6, 33, 54);
+    background-color: #fff;
+}
+

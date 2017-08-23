@@ -11,7 +11,10 @@
 
     function ajaxAnswerInviter() {
         if ($('#usermsg').val() != "") {
-            $('#chatbox').append("<p class='chatMe'><" + getTime() + "> Me: " + $('#usermsg').val() + "</p>");
+
+            $('#submitButton').prop('disabled', true);
+
+            $('#chatbox').append("<div class='chatMe'><" + getTime() + "><span class='chatUserName'> Me: </span>" + $('#usermsg').val() + "</div>");
             updateScroll();
 
             var promise = $.ajax({
@@ -32,50 +35,9 @@
 
     function proceedAnswer(result) {
         $('#usermsg').val("");
-
-        if (~result.indexOf("Figure")) {
-            var splitTextBeforeAfterImage = result.match(/(.*)\img_.*(.*)/);
-            var imageNumber = splitTextBeforeAfterImage[0].match(/\d+/);
-            var modifiedBeforeText = splitTextBeforeAfterImage[0].split("img_" + imageNumber);
-
-            //var finalAnswer = "";
-            //if (~modifiedBeforeText[0].indexOf("listDecimal")) {
-            //    var splitTextList = modifiedBeforeText[0].split("listDecimal");
-            //    for (var index = 0; index < splitTextList.length; index++) {
-            //        if (~splitTextList[index].indexOf("textStyleNormal")) {
-            //            if (~finalAnswer.indexOf("<ul class") && ~finalAnswer.indexOf("<ul class"))
-            //            finalAnswer += splitTextList[index].replace("textStyleNormal", "");
-            //        } else if (!~finalAnswer.indexOf("<ul class")){
-            //            finalAnswer += "<ul class='listDecimal'><li>" + splitTextList[index] + "</li>";
-            //        } else {
-            //            "<li>" + splitTextList[index] + "</li>";
-            //        }
-            //    }
-            //}
-
-            //if (~modifiedBeforeText[0].indexOf("listCircle")) {
-
-            //}
-
-            $('#chatbox').append("<p class='chatAssistant'><" + getTime() + "> Assistant: "
-                + modifiedBeforeText[0] + " \n\r "
-                + "</p><img class='figureImage' src= '/Home/GetImage?imgNumber=" + imageNumber + "' /><p class='figureText'>"
-                + modifiedBeforeText[1] + "</p>"
-                + "<p>");
-
-        } else if (~result.indexOf("img_")){
-            var splitTextBeforeAfterImage = result.match(/(.*)\img_.*(.*)/);
-            var imageNumber = splitTextBeforeAfterImage[0].match(/\d+/);
-            var modifiedBeforeText = splitTextBeforeAfterImage[0].split("img_" + imageNumber);
-
-            $('#chatbox').append("<p class='chatAssistant'><" + getTime() + "> Assistant: "
-                + modifiedBeforeText[0] + " \n\r "
-                + "</p><img class='figureImage' src= '/Home/GetImage?imgNumber=" + imageNumber + "'/>");
-        }
-        else {
-            $('#chatbox').append("<p class='chatAssistant'><" + getTime() + "> Assistant: " + result + "</p> ");
-        }
+        $('#chatbox').append("<div class='chatAssistant'><p><" + getTime() + "><span class='chatAssistantName'> Assistant: </span></p>" + result + "</div>");
         updateScroll();
+        $('#submitButton').prop('disabled', false);
     }
 
     /**
