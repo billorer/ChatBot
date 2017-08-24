@@ -59,8 +59,7 @@ namespace Backend.Bot
             PrepareTheCurrentQuestion(message);
 
             if(File.Exists(PublicFunctionsVariables.answersDataPath) && File.Exists(PublicFunctionsVariables.questionsDataPath) && machine == null)
-            { 
-
+            {
                 double[][] databaseInputsTFIDF = GetNormalizedTFIDFInputsFromFiles(_vocabularyIDF);
 
                 machine = GetSVM(databaseInputsTFIDF);
@@ -205,6 +204,11 @@ namespace Backend.Bot
             return machine;
         }
 
+        /// <summary>
+        /// This function normalizes the vectors it gets and returns them in a matrix
+        /// </summary>
+        /// <param name="vectors"></param>
+        /// <returns></returns>
         public static double[][] Normalize(double[][] vectors)
         {
             // Normalize the vectors using L2-Norm.
@@ -218,6 +222,15 @@ namespace Backend.Bot
             return normalizedVectors.ToArray();
         }
 
+        /// <summary>
+        /// This function normalizes the vector it gets
+        /// It basically creates a sum of each elements square
+        /// Then it sqrt-s it
+        /// And returns the divided part of the value itself
+        /// L2-norm: Xi = Xi / Sqrt(X0^2 + X1^2 + .. + Xn^2)
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public static double[] Normalize(double[] vector)
         {
             List<double> result = new List<double>();
@@ -231,8 +244,7 @@ namespace Backend.Bot
             double SqrtSumSquared = Math.Sqrt(sumSquared);
 
             foreach (var value in vector)
-            {
-                // L2-norm: Xi = Xi / Sqrt(X0^2 + X1^2 + .. + Xn^2)
+            {                
                 result.Add(value / SqrtSumSquared);
             }
 
@@ -287,6 +299,14 @@ namespace Backend.Bot
             return stemmedDocs;
         }
 
+        /// <summary>
+        /// This function goes through the terms in the vocabulary and creates a list that contains the IDF value of each term
+        /// Then returns the value of the TransformToTFIDFVectors function
+        /// </summary>
+        /// <param name="_vocabularyIDF">The words IDF value</param>
+        /// <param name="vocabulary">The words used in the whole document</param>
+        /// <param name="stemmedDocs">A list of questions, which contains the question as a list of words</param>
+        /// <returns></returns>
         public static double[][] Transform(Dictionary<string, double> _vocabularyIDF, List<string> vocabulary, List<List<string>> stemmedDocs)
         {
             if (_vocabularyIDF.Count == 0)
@@ -294,7 +314,9 @@ namespace Backend.Bot
                 // Calculate the IDF for each vocabulary term.
                 foreach (var term in vocabulary)
                 {
+                    // Goes through all the stemmedDocs and if theres a list of string that has the current term, it counts
                     double numberOfDocsContainingTerm = stemmedDocs.Where(d => d.Contains(term)).Count();
+                    // Calculating the IDF value for the term
                     _vocabularyIDF[term] = Math.Log((double)stemmedDocs.Count / ((double)1 + numberOfDocsContainingTerm));
                 }
             }
@@ -303,6 +325,15 @@ namespace Backend.Bot
             return TransformToTFIDFVectors(stemmedDocs, _vocabularyIDF);
         }
 
+        /// <summary>
+        /// This function goes through all the documents(sentences) in the stemmedDocs list
+        /// Then it goes through the values of IDF of each term from the vocabulary
+        /// It counts the TF, how many times the term appears in the document(sentence)
+        /// It counts the TFIDF value, saves it in a list and then returns the list as an array
+        /// </summary>
+        /// <param name="stemmedDocs"></param>
+        /// <param name="vocabularyIDF"></param>
+        /// <returns></returns>
         private static double[][] TransformToTFIDFVectors(List<List<string>> stemmedDocs, Dictionary<string, double> vocabularyIDF)
         {
             // Transform each document into a vector of tfidf values.
