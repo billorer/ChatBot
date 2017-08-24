@@ -11,6 +11,7 @@ namespace Backend.Public
         public static string answersDataPath = @"c:\answers.xml";
         public static string questionsDataPath = @"c:\questions.xml";
         public static string vocabularyIDFDataPath = @"c:\vocabularyIDF.xml";
+        public static string wordDocumentImagesFilePath = @"c:\WordDocImages\img_";
 
         /// <summary>
         /// This function read a file given as parameter and returns the file's content as a list

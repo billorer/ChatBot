@@ -30,6 +30,8 @@ input {
 
     min-height: 280px;
     min-width: 480px;
+
+    max-height: 600px;
 }
 
 #usermsg {
@@ -40,6 +42,10 @@ input {
 
 
 /*Chat*/
+
+#errorDiv{
+    color: #fff;
+}
 
 /* MESSAGE CELLS */
 .chatMe {
@@ -74,7 +80,8 @@ input {
 .figureImage {
     display: block;
     margin: 0 auto;
-    margin-bottom: 25px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /* TABLE */

@@ -1,6 +1,8 @@
 ﻿using Accord.MachineLearning.VectorMachines;
 using Accord.MachineLearning.VectorMachines.Learning;
+
 using Backend.Public;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +27,10 @@ namespace Backend.Bot
         private List<string> currentQuestionsVocabulary;
         private List<List<string>> currentQuestionsWords;
 
+        /// <summary>
+        /// This variables is used to check if the machine has to learn or it loaded the data.
+        /// </summary>
+        public bool machineLearned;
         private MulticlassSupportVectorMachine machine;
 
         private static AccordBotAssistant instance = null;
@@ -44,6 +50,7 @@ namespace Backend.Bot
 
         private AccordBotAssistant()
         {
+            machineLearned = false;
             _vocabularyIDF = new Dictionary<string, double>();
         }
 
@@ -52,12 +59,15 @@ namespace Backend.Bot
             PrepareTheCurrentQuestion(message);
 
             if(File.Exists(PublicFunctionsVariables.answersDataPath) && File.Exists(PublicFunctionsVariables.questionsDataPath) && machine == null)
-            {
+            { 
+
                 double[][] databaseInputsTFIDF = GetNormalizedTFIDFInputsFromFiles(_vocabularyIDF);
 
                 machine = GetSVM(databaseInputsTFIDF);
 
                 SaveMandatoryDataIntoFiles();
+
+                machineLearned = true;
             }
 
             double[][] currentQuestionInputsTFIDF = CreateNormalizedTFIDFInputs(_vocabularyIDF, currentQuestionsVocabulary, currentQuestionsWords);
@@ -95,6 +105,9 @@ namespace Backend.Bot
                 _vocabularyIDF = XElement.Parse(File.ReadAllText(PublicFunctionsVariables.vocabularyIDFDataPath))
                 .Elements()
                 .ToDictionary(k => k.Name.ToString(), v => Convert.ToDouble(v.Value.ToString()));
+
+                machineLearned = true;
+
                 return "ok";
             }
             else
