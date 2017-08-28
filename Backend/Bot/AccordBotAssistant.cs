@@ -1,4 +1,5 @@
-﻿using Accord.MachineLearning.VectorMachines;
+﻿using Accord.Controls;
+using Accord.MachineLearning.VectorMachines;
 using Accord.MachineLearning.VectorMachines.Learning;
 
 using Backend.Public;
@@ -57,10 +58,10 @@ namespace Backend.Bot
         public string Answer(string message)
         {
             PrepareTheCurrentQuestion(message);
-
-            if(File.Exists(PublicFunctionsVariables.answersDataPath) && File.Exists(PublicFunctionsVariables.questionsDataPath) && machine == null)
+            double[][] databaseInputsTFIDF = null;
+            if (File.Exists(PublicFunctionsVariables.answersDataPath) && File.Exists(PublicFunctionsVariables.questionsDataPath) && machine == null)
             {
-                double[][] databaseInputsTFIDF = GetNormalizedTFIDFInputsFromFiles(_vocabularyIDF);
+                databaseInputsTFIDF = GetNormalizedTFIDFInputsFromFiles(_vocabularyIDF);
 
                 machine = GetSVM(databaseInputsTFIDF);
 
@@ -72,6 +73,8 @@ namespace Backend.Bot
             double[][] currentQuestionInputsTFIDF = CreateNormalizedTFIDFInputs(_vocabularyIDF, currentQuestionsVocabulary, currentQuestionsWords);
 
             int[] result = machine.Decide(currentQuestionInputsTFIDF);
+
+          //  ScatterplotBox.Show("GaussianSVM results", databaseInputsTFIDF, result).Hold();
 
             return answers[result[0]];
         }
@@ -201,6 +204,9 @@ namespace Backend.Bot
               => new SequentialMinimalOptimization(svm, classInputs, classOutputs);
 
             double error = teacher.Run();
+
+            //ScatterplotBox.Show("GaussianSVM results", inputs, outputs).Hold();
+
             return machine;
         }
 

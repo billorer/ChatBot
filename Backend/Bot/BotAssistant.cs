@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Web;
 
 namespace Backend.Bot
 {
@@ -44,6 +40,5 @@ namespace Backend.Bot
             JObject json = JObject.Parse(responseString);
             return json["answers"][0]["answer"].ToString();
         }
-
     }
 }

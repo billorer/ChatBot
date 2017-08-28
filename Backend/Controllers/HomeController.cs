@@ -9,7 +9,7 @@ namespace Backend.Controllers
     public class HomeController : Controller
     {
         private QnABotAssistant qnaBotAssist;
-
+        
         public ActionResult Index()
         { 
             ViewBag.Title = "Anonym";

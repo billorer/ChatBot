@@ -83,6 +83,12 @@ input {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+.figureText {
+    display: block;
+    margin: 0 auto;
+    font-style: italic;
+    text-align: center;
+}
 
 /* TABLE */
 table {
