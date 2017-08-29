@@ -74,8 +74,6 @@ namespace Backend.Bot
 
             int[] result = machine.Decide(currentQuestionInputsTFIDF);
 
-          //  ScatterplotBox.Show("GaussianSVM results", databaseInputsTFIDF, result).Hold();
-
             return answers[result[0]];
         }
 
@@ -204,8 +202,6 @@ namespace Backend.Bot
               => new SequentialMinimalOptimization(svm, classInputs, classOutputs);
 
             double error = teacher.Run();
-
-            //ScatterplotBox.Show("GaussianSVM results", inputs, outputs).Hold();
 
             return machine;
         }
