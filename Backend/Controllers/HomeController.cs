@@ -12,7 +12,7 @@ namespace Backend.Controllers
         
         public ActionResult Index()
         { 
-            ViewBag.Title = "Anonym";
+            ViewBag.Title = "Bot";
             return View();
         }
 

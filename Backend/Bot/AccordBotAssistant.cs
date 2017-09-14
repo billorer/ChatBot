@@ -1,5 +1,4 @@
-﻿using Accord.Controls;
-using Accord.MachineLearning.VectorMachines;
+﻿using Accord.MachineLearning.VectorMachines;
 using Accord.MachineLearning.VectorMachines.Learning;
 
 using Backend.Public;

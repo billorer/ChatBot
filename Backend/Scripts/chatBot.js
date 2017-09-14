@@ -75,7 +75,7 @@
         } else {
             answerProcedureFinished = true;
             $('#errorDiv').empty();
-            $('#chatbox').append("<div class='chatAssistant'><p><" + getTime() + "><span class='chatAssistantName'> Anonym: </span></p>" + result + "</div>");
+            $('#chatbox').append("<div class='chatAssistant'><p><" + getTime() + "><span class='chatAssistantName'> Assistant: </span></p>" + result + "</div>");
         }
         updateScroll();
         $('#submitButton').prop('disabled', false);
